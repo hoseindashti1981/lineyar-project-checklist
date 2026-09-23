@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>چک‌لیست مستندسازی پروژه</title>
+
+  <!-- در حالت آنلاین وزیرمتن بارگذاری می‌شود؛ در حالت آفلاین از فونت‌های جایگزین سیستم استفاده می‌شود. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#667085;
+      --line:#e4e7ec;
+      --primary:#155eef;
+      --primary2:#004eeb;
+      --ok:#067647;
+      --warn:#b54708;
+      --danger:#b42318;
+      --soft:#f8fafc;
+      --shadow:0 4px 18px rgba(16,24,40,.06);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;min-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    body{
+      margin:0;
+      min-height:100%;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Vazirmatn","Vazir",Tahoma,Arial,sans-serif;
+      line-height:1.8;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .app{
+      max-width:820px;
+      margin:0 auto;
+      padding:14px 12px 110px;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(245,247,251,.95);
+      backdrop-filter:blur(9px);
+      padding:8px 0 10px;
+    }
+
+    .hero,.section,.toolbar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero{padding:16px;margin-bottom:12px}
+    h1{font-size:22px;margin:0 0 6px}
+    .subtitle{font-size:13px;color:var(--muted);margin:0}
+
+    .progress-wrap{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      align-items:center;
+    }
+    .progress{
+      height:10px;
+      background:#eef2f6;
+      overflow:hidden;
+      border-radius:999px;
+    }
+    .progress > div{
+      height:100%;
+      width:0;
+      background:linear-gradient(90deg,var(--primary),#7c3aed);
+      transition:width .25s ease;
+    }
+    .progress-label{font-size:12px;color:var(--muted);min-width:62px;text-align:left}
+
+    .project-box{
+      padding:14px;
+      margin:0 0 12px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .full{grid-column:1/-1}
+    label.field-label{
+      display:block;
+      font-size:12px;
+      color:#344054;
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    input,textarea,select{
+      width:100%;
+      border:1px solid #d0d5dd;
+      border-radius:10px;
+      padding:10px 11px;
+      font:inherit;
+      color:var(--text);
+      background:white;
+      outline:none;
+    }
+    input:focus,textarea:focus,select:focus{
+      border-color:#84adff;
+      box-shadow:0 0 0 3px rgba(21,94,239,.10);
+    }
+    textarea{resize:vertical;min-height:90px}
+
+    .section{
+      margin-bottom:12px;
+      overflow:hidden;
+    }
+    .section-head{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      background:#fbfcfe;
+    }
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .section-title h2{font-size:17px;margin:0}
+    .section-count{
+      font-size:11px;
+      color:var(--muted);
+      background:#eef2f6;
+      padding:3px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .section-desc{
+      font-size:12px;
+      color:var(--muted);
+      margin:5px 0 0;
+    }
+
+    .check-item{
+      padding:12px 14px;
+      border-bottom:1px solid #eef1f4;
+    }
+    .check-item:last-child{border-bottom:0}
+
+    .check-row{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:10px;
+      align-items:start;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .check-row input[type="checkbox"]{
+      width:22px;
+      height:22px;
+      margin-top:3px;
+      accent-color:var(--primary);
+      flex:0 0 auto;
+    }
+
+    .item-title{
+      font-weight:600;
+      font-size:14px;
+      margin:0;
+    }
+    .item-help{
+      font-size:12px;
+      color:var(--muted);
+      margin:2px 0 0;
+      line-height:1.75;
+    }
+
+    .note-box{
+      display:none;
+      margin-top:10px;
+      padding-right:32px;
+      animation:open .18s ease;
+    }
+    .check-item.checked .note-box{display:block}
+    .check-item.checked .item-title{color:var(--ok)}
+    .note-box textarea{
+      min-height:92px;
+      background:#fbfcfe;
+    }
+    .note-hint{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    @keyframes open{
+      from{opacity:0;transform:translateY(-4px)}
+      to{opacity:1;transform:none}
+    }
+
+    .toolbar{
+      position:fixed;
+      z-index:30;
+      right:10px;
+      left:10px;
+      bottom:10px;
+      max-width:796px;
+      margin:auto;
+      padding:8px;
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    button{
+      border:0;
+      border-radius:10px;
+      min-height:42px;
+      padding:8px 12px;
+      font:inherit;
+      font-size:12px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .primary{background:var(--primary);color:#fff}
+    .primary:active{background:var(--primary2)}
+    .secondary{background:#eef2f6;color:#344054}
+    .success{background:#ecfdf3;color:var(--ok)}
+    .danger{background:#fee4e2;color:var(--danger)}
+
+    .status{
+      display:none;
+      position:fixed;
+      z-index:40;
+      right:16px;
+      left:16px;
+      bottom:74px;
+      max-width:520px;
+      margin:auto;
+      background:#101828;
+      color:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:12px;
+      text-align:center;
+      box-shadow:0 8px 24px rgba(0,0,0,.2);
+    }
+
+    .note-card{
+      background:#fffaeb;
+      color:#7a2e0e;
+      border:1px solid #fedf89;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:12px;
+      margin-bottom:12px;
+    }
+
+    .summary-output{
+      min-height:320px;
+      direction:rtl;
+      text-align:right;
+      font-size:12px;
+      line-height:1.9;
+      display:none;
+      margin-top:10px;
+    }
+
+    @media(max-width:620px){
+      .grid{grid-template-columns:1fr}
+      .full{grid-column:auto}
+      .app{padding-left:10px;padding-right:10px}
+      .toolbar{right:8px;left:8px}
+      .note-box{padding-right:0}
+      h1{font-size:20px}
+    }
+
+    @media print{
+      body{background:#fff}
+      .toolbar,.status,.topbar{display:none !important}
+      .app{max-width:none;padding:0}
+      .hero,.section,.project-box{box-shadow:none}
+      .check-item:not(.checked){opacity:.45}
+      .note-box{display:block !important}
+    }
+  </style>
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="چک‌لیست پروژه">
+  <meta name="mobile-web-app-capable" content="yes">
+
+</head>
+
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="hero">
+      <h1>چک‌لیست مستندسازی پروژه</h1>
+      <p class="subtitle">برای پروژه‌های لاین نوری و سیستم صوتی؛ از اولین بازدید تا تحویل نهایی و آماده‌سازی محتوای سایت.</p>
+
+      <div class="progress-wrap">
+        <div class="progress"><div id="progressBar"></div></div>
+        <div id="progressLabel" class="progress-label">۰ از ۰</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-card">
+    هر موردی که انجام شد تیک بزن. همان لحظه یک کادر یادداشت زیرش باز می‌شود.
+    نکته واقعی، عدد، مدل تجهیز، مشکل، تصمیم فنی یا چیزی که بعداً ممکن است یادت برود را همان‌جا بنویس.
+    اطلاعات به‌صورت خودکار در همین مرورگر ذخیره می‌شوند.
+  </div>
+
+  <div class="project-box">
+    <div class="grid">
+      <div>
+        <label class="field-label">نام / عنوان پروژه</label>
+        <input id="projectName" data-project placeholder="مثلاً: پروژه لاین نوری و صوت نیاوران">
+      </div>
+
+      <div>
+        <label class="field-label">تاریخ اولین بازدید</label>
+        <input id="visitDate" data-project type="date">
+      </div>
+
+      <div>
+        <label class="field-label">شهر / محله</label>
+        <input id="projectLocation" data-project placeholder="مثلاً: تهران، نیاوران">
+      </div>
+
+      <div>
+        <label class="field-label">متراژ تقریبی</label>
+        <input id="projectArea" data-project placeholder="مثلاً: ۱۸۰ متر مربع">
+      </div>
+
+      <div>
+        <label class="field-label">نام کارفرما / کد پروژه</label>
+        <input id="clientName" data-project placeholder="اختیاری — بهتر است نام کامل در خروجی سایت منتشر نشود">
+      </div>
+
+      <div>
+        <label class="field-label">وضعیت پروژه</label>
+        <select id="projectStatus" data-project>
+          <option value="">انتخاب کنید</option>
+          <option>بازدید اولیه</option>
+          <option>قرارداد شده</option>
+          <option>در حال اجرا</option>
+          <option>آماده تحویل</option>
+          <option>تحویل شده</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label class="field-label">یادداشت کلی پروژه</label>
+        <textarea id="generalNote" data-project placeholder="هر نکته کلی که به یک مرحله خاص مربوط نیست..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div id="jsError" style="display:none;background:#fee4e2;color:#b42318;border:1px solid #fecdca;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:12px">
+    خطا در اجرای چک‌لیست. لطفاً این نسخه را در Chrome / Safari اصلی باز کنید.
+  </div>
+  <div id="sections"></div>
+
+  <div class="project-box">
+    <label class="field-label">خلاصه آماده برای مرور شبانه</label>
+    <textarea id="summaryOutput" class="summary-output" readonly></textarea>
+  </div>
+
+</div>
+
+<div class="toolbar">
+  <button class="primary" id="summaryBtn">ساخت خلاصه</button>
+  <button class="success" id="exportTxtBtn">دانلود TXT</button>
+  <button class="secondary" id="exportJsonBtn">بکاپ JSON</button>
+  <button class="secondary" id="importBtn">بازیابی بکاپ</button>
+  <button class="danger" id="resetBtn">پروژه جدید</button>
+  <input id="importFile" type="file" accept="application/json,.json" hidden>
+</div>
+
+<div id="status" class="status"></div>
+
+
+<script>
+/* نسخه سازگارتر با مرورگرهای موبایل و file:// */
+var CHECKLIST = [
+  {
+    title: "مرحله ۱ — بازدید اولیه و قبل از قرارداد",
+    desc: "چیزهایی که اگر همان روز ثبت نشوند، بعداً معمولاً فراموش می‌شوند.",
+    items: [
+      ["نوع پروژه و محدوده کار را مشخص کردم", "دقیق بنویس پروژه فقط لاین نوری است، فقط صوت است یا هر دو؛ و چه فضاهایی را شامل می‌شود."],
+      ["خواسته اصلی کارفرما را ثبت کردم", "مثلاً نور یکنواخت، حذف لوستر، نور خطی مخفی، سیستم صوتی چندزون، کنترل مستقل صدا یا پنهان بودن تجهیزات."],
+      ["مشکل یا ضعف وضعیت فعلی را ثبت کردم", "مثلاً نقاط تاریک، سقف محدود، سیم‌کشی قدیمی، نبود مسیر کابل، صدای نامتوازن یا محل نامناسب اسپیکرها."],
+      ["متراژ و فضاهای درگیر پروژه را ثبت کردم", "متراژ کلی و در صورت امکان متراژ یا ابعاد فضاهای اصلی."],
+      ["محدودیت‌های فنی ساختمان را ثبت کردم", "نوع سقف، ارتفاع سقف، مسیرهای قابل عبور، محل تابلو برق، دسترسی تعمیراتی، سازه یا محدودیت معماری."],
+      ["درباره اجازه عکاسی و انتشار با کارفرما هماهنگ کردم", "مشخص کن عکس پروژه برای سایت/شبکه اجتماعی قابل استفاده است یا خیر؛ آدرس دقیق، چهره، پلاک و اطلاعات خصوصی را بدون اجازه منتشر نکن."],
+      ["عکس‌های «قبل از اجرا» را گرفتم", "از هر فضای مهم یک نمای باز، یک نمای متوسط و چند جزئیات مشکل‌دار بگیر. زاویه‌های مناسب را طوری انتخاب کن که در پایان بتوانی همان زاویه را تکرار کنی."],
+      ["زاویه‌های Before/After را علامت‌گذاری کردم", "اگر لازم است جای ایستادن و جهت دوربین را در یادداشت بنویس تا روز تحویل همان قاب را دوباره بسازی."],
+      ["مدارک یا اطلاعات فنی موجود را ثبت کردم", "نقشه، مشخصات سقف، تابلو، آمپلی‌فایر موجود، مدل تجهیزات قبلی یا هر داده‌ای که تصمیم طراحی را تحت تأثیر می‌گذارد."]
+    ]
+  },
+  {
+    title: "مرحله ۲ — طراحی، انتخاب تجهیزات و قبل از شروع اجرا",
+    desc: "اینجا باید دلیل تصمیم‌های فنی را نگه داری، نه فقط اسم تجهیزات را.",
+    items: [
+      ["طرح کلی نورپردازی را ثبت کردم", "محل لاین‌ها، مسیرها، طول تقریبی، نوع نور مستقیم/غیرمستقیم و دلیل انتخاب آنها."],
+      ["دمای رنگ و ویژگی نور را ثبت کردم", "مثلاً 3000K یا 4000K، توان تقریبی، CRI اگر مهم است، دیمر یا کنترل هوشمند."],
+      ["نوع پروفیل، LED و درایور را ثبت کردم", "برند، مدل، توان، ولتاژ، نوع دیفیوزر و محل دسترسی به درایور را اگر معلوم است بنویس."],
+      ["طرح سیستم صوتی را ثبت کردم", "تعداد اسپیکرها، محل قرارگیری، تعداد زون‌ها، آمپلی‌فایر و نحوه کنترل را ثبت کن."],
+      ["مدل تجهیزات صوتی را ثبت کردم", "برند و مدل اسپیکر، آمپلی‌فایر، ساب‌ووفر، کنترلر، ورودی‌ها یا تجهیزات شبکه/بلوتوث."],
+      ["دلیل جانمایی اسپیکرها را ثبت کردم", "مثلاً پوشش یکنواخت، محدودیت سقف، جلوگیری از تمرکز صدا یا تفکیک زون‌ها."],
+      ["نقاط سرویس و دسترسی آینده را مشخص کردم", "درایورها، آمپلی‌فایر، رک، اتصالات و تجهیزاتی که نباید بدون دسترسی داخل سقف دفن شوند."],
+      ["برآورد مقدار تجهیزات و کابل را نگه داشتم", "متر لاین نوری، کابل برق/صوت، تعداد درایور، تعداد اسپیکر و تجهیزات مهم."]
+    ]
+  },
+  {
+    title: "مرحله ۳ — مستندسازی اجرای لاین نوری",
+    desc: "عکس اجرایی باید چیزی را ثابت کند؛ صرفاً عکس ابزار و کارگر ارزش کمی دارد.",
+    items: [
+      ["از زیرسازی و مسیر لاین قبل از بسته‌شدن عکس گرفتم", "نمایی بگیر که مسیر و ارتباط آن با فضا قابل فهم باشد."],
+      ["از برش‌ها، گوشه‌ها و اتصالات مهم عکس گرفتم", "جاهایی که دقت اجرا مشخص است؛ اتصال گوشه، تغییر مسیر، اتصال پروفیل یا پایان کار."],
+      ["از تراز و هم‌راستایی لاین عکس گرفتم", "اگر روش یا ابزار خاصی استفاده شده، همان‌جا یادداشت کن."],
+      ["از مسیر کابل‌کشی و تغذیه عکس گرفتم", "عکس باید مرتب بودن اجرا و قابل‌فهم بودن مسیر را نشان دهد."],
+      ["از محل درایورها و دسترسی سرویس عکس گرفتم", "ثبت کن چرا محل انتخاب شده و چگونه در آینده قابل دسترسی است."],
+      ["از تست اولیه نور قبل از تکمیل نهایی عکس گرفتم", "یکنواختی نور، نقاط اتصال، افت نور یا اصلاحات احتمالی را یادداشت کن."],
+      ["مشکل اجرایی خاص و راه‌حل آن را ثبت کردم", "مثلاً محدودیت سقف، کمبود فضا، شکست مسیر، گرما، دسترسی یا تغییر نقشه."]
+    ]
+  },
+  {
+    title: "مرحله ۴ — مستندسازی اجرای سیستم صوتی",
+    desc: "برای صوت باید جانمایی، کابل‌کشی و منطق طراحی را ثبت کنی چون «صدا» در عکس دیده نمی‌شود.",
+    items: [
+      ["از مسیر کابل‌کشی قبل از بسته‌شدن سقف عکس گرفتم", "مسیرها، جداسازی مناسب و تمیزی اجرا را نشان بده."],
+      ["از محل نصب اسپیکرها قبل و بعد از برش عکس گرفتم", "موقعیت اسپیکر نسبت به سقف و فضای اطراف مشخص باشد."],
+      ["از نصب نهایی اسپیکرها نمای نزدیک گرفتم", "تمیزی برش، هم‌ترازی، نصب بدون آسیب و یکدستی ظاهری."],
+      ["از نمای کلی فضا با جانمایی اسپیکرها عکس گرفتم", "عکسی که مخاطب بفهمد اسپیکرها چطور در فضا پخش شده‌اند."],
+      ["از آمپلی‌فایر / رک / کنترلر عکس گرفتم", "اتصالات مرتب، محل قرارگیری، دسترسی و اجزای اصلی سیستم."],
+      ["زون‌ها و نحوه کنترل را ثبت کردم", "مثلاً نشیمن و غذاخوری جدا، کنترل مستقل حجم، بلوتوث، TV integration یا کنترل هوشمند."],
+      ["تنظیمات یا تست نهایی سیستم را ثبت کردم", "فقط واقعیت را بنویس؛ از ادعای کیفیت صوتی غیرقابل اثبات پرهیز کن."],
+      ["مشکل صوتی یا اجرایی و راه‌حل آن را ثبت کردم", "مثلاً محدودیت جانمایی، تداخل مسیر، پوشش نامتوازن یا محدودیت تجهیزات."]
+    ]
+  },
+  {
+    title: "مرحله ۵ — عکس‌ها و ویدیوهای حین اجرا",
+    desc: "هدف، ساخت آرشیوی است که بعداً بتواند تخصص تو را ثابت کند.",
+    items: [
+      ["حداقل چند عکس فنی مفید از مراحل گرفتم", "به‌جای تعداد زیاد عکس شبیه هم، چند عکس متفاوت که هرکدام یک نکته را نشان دهند."],
+      ["از جزئیات تمیز اجرا کلوزآپ گرفتم", "گوشه‌ها، اتصالات، کابل‌کشی، محل تجهیزات یا هر چیزی که کیفیت اجرا را نشان دهد."],
+      ["از مراحل قبل از پوشانده‌شدن عکس گرفتم", "هر چیزی که بعداً پشت سقف یا دیوار مخفی می‌شود، الان ثبت شود."],
+      ["از تصمیم یا راه‌حل خاص پروژه عکس گرفتم", "همراه یادداشت اینکه مشکل چه بود و چرا این راه‌حل انتخاب شد."],
+      ["ویدیوی کوتاه از عملکرد سیستم گرفتم", "مثلاً روشن/خاموش یا تغییر سناریوی نور، کنترل صوت، تغییر زون یا نحوه استفاده. ویدیو را مدرک قطعی کیفیت صوتی معرفی نکن."]
+    ]
+  },
+  {
+    title: "مرحله ۶ — قبل از عکاسی نهایی",
+    desc: "کار خوب با عکس شلوغ و بد، ضعیف دیده می‌شود.",
+    items: [
+      ["ابزار، کارتن، کابل اضافه و وسایل موقت جمع شدند", "قبل از عکاسی نهایی کادر را تمیز کن."],
+      ["لنز موبایل را تمیز کردم", "ساده است ولی روی عکس نورپردازی اثر زیادی دارد."],
+      ["نورهای فضا را در حالت مناسب تنظیم کردم", "سناریوی طبیعی و قابل‌استفاده؛ نه فقط بیشترین روشنایی."],
+      ["برای عکس لاین نوری Exposure را کنترل کردم", "اگر خط نور سفید و سوخته دیده می‌شود، نوردهی را کمی کم کن تا شکل و یکنواختی لاین حفظ شود."],
+      ["رنگ واقعی نور را حفظ کردم", "فیلتر یا ویرایش شدید که 3000K را سفید یا رنگ دیگری نشان دهد استفاده نکن."],
+      ["از دوربین اصلی و بدون زوم دیجیتال استفاده کردم", "معمولاً دوربین 1x موبایل بهترین کیفیت را دارد؛ نسبت اصلی 4:3 انتخاب مناسبی برای ثبت اولیه است."]
+    ]
+  },
+  {
+    title: "مرحله ۷ — عکس‌ها و ویدیوهای نهایی",
+    desc: "این بخش مواد خام اصلی صفحه پروژه سایت خواهد بود.",
+    items: [
+      ["عکس‌های نهایی نمای باز گرفتم", "کل فضا و رابطه نور/صوت با معماری مشخص باشد."],
+      ["عکس‌های متوسط از هر فضای مهم گرفتم", "نه خیلی دور و نه فقط جزئیات؛ برای نمایش نتیجه اجرا."],
+      ["کلوزآپ جزئیات مهم گرفتم", "لاین، گوشه، دیفیوزر، اسپیکر، کنترلر، رک یا جزئیات تمیز اجرا."],
+      ["همان زاویه‌های «قبل» را دوباره گرفتم", "برای Before/After واقعی، ارتفاع و جهت دوربین را تا حد ممکن مشابه نگه دار."],
+      ["هم عکس افقی و هم عمودی گرفتم", "افقی برای سایت و عمودی برای شبکه‌های اجتماعی و موبایل مفید است."],
+      ["نمای کلی سیستم صوتی در فضا را ثبت کردم", "مخاطب باید جانمایی اسپیکرها و ادغام آنها با فضا را بفهمد."],
+      ["از کنترل یا عملکرد سیستم ویدیوی کوتاه گرفتم", "نشان بده سیستم چگونه استفاده می‌شود؛ نه اینکه با میکروفون موبایل کیفیت صوت را ثابت کنی."],
+      ["عکس‌ها را از نظر حریم خصوصی بررسی کردم", "چهره، پلاک، اسناد، آدرس دقیق، مانیتورهای حاوی اطلاعات یا وسایل خصوصی ناخواسته در تصویر نباشد."]
+    ]
+  },
+  {
+    title: "مرحله ۸ — تحویل پروژه",
+    desc: "چیزهایی که نتیجه واقعی پروژه را برای متن سایت قابل‌اعتماد می‌کنند.",
+    items: [
+      ["تست نهایی لاین نوری انجام شد", "یکنواختی، اتصالات، دیمر، سناریوها و هر مورد مهم را ثبت کن."],
+      ["تست نهایی سیستم صوتی انجام شد", "زون‌ها، کنترل‌ها، ورودی‌ها و عملکرد واقعی سیستم را یادداشت کن."],
+      ["نحوه استفاده و سرویس به کارفرما توضیح داده شد", "مواردی مثل محل درایور، آمپلی‌فایر، کلیدها، کنترل‌ها یا دسترسی‌های سرویس."],
+      ["نتیجه نهایی پروژه را با چند جمله واقعی ثبت کردم", "چه چیزی نسبت به قبل تغییر کرد؟ چه مسئله‌ای حل شد؟ از عبارت‌های کلی مثل «فوق‌العاده شد» پرهیز کن."],
+      ["نظر کوتاه کارفرما را گرفتم", "بهتر از «راضی بودید؟» بپرس: مهم‌ترین تغییری که بعد از اجرا احساس کردید چه بود؟ در صورت اجازه، جمله واقعی او را ثبت کن."],
+      ["اجازه استفاده از نظر یا تصاویر کارفرما مشخص شد", "اگر قرار است نقل‌قول یا تصویر خاصی منتشر شود، اجازه آن روشن باشد."]
+    ]
+  },
+  {
+    title: "مرحله ۹ — اطلاعات لازم برای صفحه سایت",
+    desc: "اگر این بخش کامل باشد، شب هنگام واردکردن پروژه در سایت به اطلاعات ساختگی نیاز نداری.",
+    items: [
+      ["نوع پروژه / خدمت نهایی را مشخص کردم", "مثلاً اجرای لاین نوری و سیستم صوتی آپارتمان."],
+      ["شهر و محله قابل انتشار را مشخص کردم", "آدرس دقیق را فقط در صورت نیاز و اجازه منتشر کن."],
+      ["متراژ پروژه را ثبت کردم", "مقدار واقعی یا تقریبی معتبر."],
+      ["خواسته و وضعیت اولیه کارفرما را خلاصه کردم", "اصل مسئله قبل از اجرا را در چند جمله واقعی بنویس."],
+      ["فهرست کارهای انجام‌شده را کامل کردم", "نور، برق، پروفیل، درایور، کابل‌کشی، اسپیکر، آمپلی‌فایر، کنترل و هر کاری که واقعاً انجام شده."],
+      ["متریال و مدل تجهیزات مهم را ثبت کردم", "فقط اطلاعات قطعی؛ مدل نامعلوم را حدس نزن."],
+      ["مهم‌ترین جزئیات طراحی/اجرا را ثبت کردم", "چیزی که این پروژه را از متن عمومی و تکراری جدا می‌کند."],
+      ["چالش و راه‌حل پروژه را ثبت کردم", "اگر چالش خاصی وجود نداشت، مجبور نیستی چیزی بسازی."],
+      ["نتیجه نهایی را به‌صورت قابل اثبات نوشتم", "مثلاً افزایش یکنواختی نور، پنهان شدن تجهیزات، کنترل مستقل زون‌ها یا بهبود دسترسی سرویس."],
+      ["بهترین عکس شاخص را مشخص کردم", "تصویری واضح، تمیز و نماینده نتیجه اصلی پروژه."],
+      ["عکس‌های گالری را مرتب کردم", "ترتیب پیشنهادی: نمای کلی → فضاهای اصلی → جزئیات → تصاویر اجرایی منتخب → Before/After."],
+      ["برای هر عکس یک توضیح واقعی کوتاه آماده کردم", "این توضیح بعداً مبنای ALT و متادیتای تصویر در وردپرس می‌شود."]
+    ]
+  }
+];
+
+var STORAGE_KEY = "project-documentation-checklist-v2-mobile";
+var sectionsRoot = document.getElementById("sections");
+var statusEl = document.getElementById("status");
+
+function esc(s){
+  s = (s === undefined || s === null) ? "" : String(s);
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function toFa(n){
+  return String(n).replace(/\d/g,function(d){
+    return "۰۱۲۳۴۵۶۷۸۹".charAt(parseInt(d,10));
+  });
+}
+
+function debounce(fn,wait){
+  var t;
+  return function(){
+    var args = arguments, ctx = this;
+    clearTimeout(t);
+    t = setTimeout(function(){ fn.apply(ctx,args); },wait);
+  };
+}
+
+function flash(msg){
+  if(!statusEl) return;
+  statusEl.textContent = msg;
+  statusEl.style.display = "block";
+  clearTimeout(flash.timer);
+  flash.timer = setTimeout(function(){ statusEl.style.display = "none"; },2200);
+}
+
+function bindCheckEvents(itemEl,check,note){
+  check.addEventListener("change",function(){
+    if(check.checked){
+      if(itemEl.className.indexOf("checked") === -1) itemEl.className += " checked";
+      setTimeout(function(){ try{ note.focus(); }catch(e){} },80);
+    }else{
+      itemEl.className = itemEl.className.replace(/\s*checked\b/g,"");
+    }
+    saveState();
+    updateProgress();
+  });
+  note.addEventListener("input",debounce(saveState,250));
+}
+
+function renderChecklist(){
+  var globalIndex = 0;
+  var sIndex,iIndex,section,wrap,sectionId,itemsRoot,item,id,itemEl,check,note;
+
+  for(sIndex=0;sIndex<CHECKLIST.length;sIndex++){
+    section = CHECKLIST[sIndex];
+    wrap = document.createElement("section");
+    wrap.className = "section";
+    sectionId = "section-" + sIndex;
+
+    wrap.innerHTML =
+      '<div class="section-head">' +
+        '<div class="section-title">' +
+          '<h2>' + esc(section.title) + '</h2>' +
+          '<span class="section-count" id="' + sectionId + '-count">۰ / ' + toFa(section.items.length) + '</span>' +
+        '</div>' +
+        '<p class="section-desc">' + esc(section.desc) + '</p>' +
+      '</div>' +
+      '<div class="section-items"></div>';
+
+    itemsRoot = wrap.querySelector(".section-items");
+
+    for(iIndex=0;iIndex<section.items.length;iIndex++){
+      item = section.items[iIndex];
+      id = "item-" + globalIndex;
+      globalIndex++;
+
+      itemEl = document.createElement("div");
+      itemEl.className = "check-item";
+      itemEl.setAttribute("data-section",String(sIndex));
+      itemEl.setAttribute("data-item",String(iIndex));
+      itemEl.setAttribute("data-id",id);
+
+      itemEl.innerHTML =
+        '<label class="check-row">' +
+          '<input type="checkbox" class="task-check" id="' + id + '-check">' +
+          '<div>' +
+            '<p class="item-title">' + esc(item[0]) + '</p>' +
+            '<p class="item-help">' + esc(item[1]) + '</p>' +
+          '</div>' +
+        '</label>' +
+        '<div class="note-box">' +
+          '<textarea class="item-note" id="' + id + '-note" placeholder="یادداشت همین مورد را اینجا بنویس..."></textarea>' +
+          '<div class="note-hint">خودکار ذخیره می‌شود.</div>' +
+        '</div>';
+
+      check = itemEl.querySelector(".task-check");
+      note = itemEl.querySelector(".item-note");
+      bindCheckEvents(itemEl,check,note);
+      itemsRoot.appendChild(itemEl);
+    }
+
+    sectionsRoot.appendChild(wrap);
+  }
+}
+
+function gatherState(){
+  var project = {}, items = {};
+  var projectEls = document.querySelectorAll("[data-project]");
+  var itemEls = document.querySelectorAll(".check-item");
+  var i,el,id,check,note;
+
+  for(i=0;i<projectEls.length;i++){
+    el = projectEls[i];
+    project[el.id] = el.value;
+  }
+
+  for(i=0;i<itemEls.length;i++){
+    el = itemEls[i];
+    id = el.getAttribute("data-id");
+    check = el.querySelector(".task-check");
+    note = el.querySelector(".item-note");
+    items[id] = {checked:!!check.checked,note:note.value};
+  }
+
+  return {
+    version:2,
+    savedAt:new Date().toISOString(),
+    project:project,
+    items:items
+  };
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(gatherState()));
+  }catch(e){
+    flash("ذخیره خودکار روی این مرورگر ممکن نشد. از بکاپ JSON استفاده کن.");
+  }
+}
+
+function loadState(data){
+  if(!data) return;
+  var id,value,el,obj,itemEl,check,note;
+
+  if(data.project){
+    for(id in data.project){
+      if(!Object.prototype.hasOwnProperty.call(data.project,id)) continue;
+      value = data.project[id];
+      el = document.getElementById(id);
+      if(el) el.value = (value === undefined || value === null) ? "" : value;
+    }
+  }
+
+  if(data.items){
+    for(id in data.items){
+      if(!Object.prototype.hasOwnProperty.call(data.items,id)) continue;
+      obj = data.items[id];
+      itemEl = document.querySelector('[data-id="' + id + '"]');
+      if(!itemEl) continue;
+
+      check = itemEl.querySelector(".task-check");
+      note = itemEl.querySelector(".item-note");
+
+      check.checked = !!obj.checked;
+      note.value = (obj.note === undefined || obj.note === null) ? "" : obj.note;
+
+      if(check.checked){
+        if(itemEl.className.indexOf("checked") === -1) itemEl.className += " checked";
+      }else{
+        itemEl.className = itemEl.className.replace(/\s*checked\b/g,"");
+      }
+    }
+  }
+  updateProgress();
+}
+
+function restoreFromLocal(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) raw = localStorage.getItem("project-documentation-checklist-v1");
+    if(raw) loadState(JSON.parse(raw));
+  }catch(e){}
+}
+
+function updateProgress(){
+  var checks = document.querySelectorAll(".task-check");
+  var total = checks.length, done = 0;
+  var i,sIndex,els,sectionDone,counter,j;
+
+  for(i=0;i<total;i++){
+    if(checks[i].checked) done++;
+  }
+
+  document.getElementById("progressBar").style.width = (total ? Math.round(done/total*100) : 0) + "%";
+  document.getElementById("progressLabel").textContent = toFa(done) + " از " + toFa(total);
+
+  for(sIndex=0;sIndex<CHECKLIST.length;sIndex++){
+    els = document.querySelectorAll('.check-item[data-section="' + sIndex + '"] .task-check');
+    sectionDone = 0;
+    for(j=0;j<els.length;j++) if(els[j].checked) sectionDone++;
+    counter = document.getElementById("section-" + sIndex + "-count");
+    if(counter) counter.textContent = toFa(sectionDone) + " / " + toFa(els.length);
+  }
+}
+
+function buildSummary(){
+  var data = gatherState();
+  var p = data.project || {};
+  var lines = [];
+  var index = 0;
+  var sIndex,iIndex,section,sectionLines,id,obj,trimmed;
+
+  lines.push("گزارش مستندسازی پروژه");
+  lines.push("======================");
+  if(p.projectName) lines.push("پروژه: " + p.projectName);
+  if(p.visitDate) lines.push("تاریخ اولین بازدید: " + p.visitDate);
+  if(p.projectLocation) lines.push("موقعیت: " + p.projectLocation);
+  if(p.projectArea) lines.push("متراژ: " + p.projectArea);
+  if(p.clientName) lines.push("کارفرما / کد پروژه: " + p.clientName);
+  if(p.projectStatus) lines.push("وضعیت: " + p.projectStatus);
+  if(p.generalNote) lines.push("یادداشت کلی: " + p.generalNote);
+  lines.push("");
+
+  for(sIndex=0;sIndex<CHECKLIST.length;sIndex++){
+    section = CHECKLIST[sIndex];
+    sectionLines = [];
+
+    for(iIndex=0;iIndex<section.items.length;iIndex++){
+      id = "item-" + index;
+      index++;
+      obj = data.items[id];
+      if(!obj) continue;
+
+      trimmed = obj.note ? obj.note.replace(/^\s+|\s+$/g,"") : "";
+      if(obj.checked || trimmed){
+        sectionLines.push((obj.checked ? "✓ " : "• ") + section.items[iIndex][0]);
+        if(trimmed) sectionLines.push("  یادداشت: " + trimmed);
+      }
+    }
+
+    if(sectionLines.length){
+      lines.push(section.title);
+      lines.push("----------------------------------------");
+      for(iIndex=0;iIndex<sectionLines.length;iIndex++) lines.push(sectionLines[iIndex]);
+      lines.push("");
+    }
+  }
+  return lines.join("\n").replace(/\s+$/,"");
+}
+
+function safeName(){
+  var raw = document.getElementById("projectName").value.replace(/^\s+|\s+$/g,"") || "project-notes";
+  return raw.replace(/[\\/:*?"<>|]+/g,"-").replace(/\s+/g,"-").replace(/-+/g,"-").substring(0,70);
+}
+
+function downloadBlob(blob,filename){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); },1200);
+}
+
+var delayedSaveProject = debounce(saveState,250);
+
+document.addEventListener("input",function(e){
+  var t = e.target;
+  if(t && t.hasAttribute && t.hasAttribute("data-project")) delayedSaveProject();
+});
+
+document.addEventListener("change",function(e){
+  var t = e.target;
+  if(t && t.hasAttribute && t.hasAttribute("data-project")) saveState();
+});
+
+document.getElementById("summaryBtn").addEventListener("click",function(){
+  var out = document.getElementById("summaryOutput");
+  out.value = buildSummary();
+  out.style.display = "block";
+  try{ out.scrollIntoView(true); }catch(e){}
+  flash("خلاصه ساخته شد.");
+});
+
+document.getElementById("exportTxtBtn").addEventListener("click",function(){
+  downloadBlob(new Blob(["\ufeff" + buildSummary()],{type:"text/plain;charset=utf-8"}),safeName() + "-notes.txt");
+  flash("فایل TXT ساخته شد.");
+});
+
+document.getElementById("exportJsonBtn").addEventListener("click",function(){
+  downloadBlob(new Blob([JSON.stringify(gatherState(),null,2)],{type:"application/json;charset=utf-8"}),safeName() + "-backup.json");
+  flash("بکاپ JSON ساخته شد.");
+});
+
+document.getElementById("importBtn").addEventListener("click",function(){
+  document.getElementById("importFile").click();
+});
+
+document.getElementById("importFile").addEventListener("change",function(e){
+  var file = e.target.files && e.target.files[0];
+  if(!file) return;
+
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      loadState(JSON.parse(reader.result));
+      saveState();
+      flash("بکاپ بازیابی شد.");
+    }catch(err){
+      alert("فایل بکاپ معتبر نیست.");
+    }
+    e.target.value = "";
+  };
+  reader.onerror = function(){
+    alert("خواندن فایل بکاپ ممکن نشد.");
+    e.target.value = "";
+  };
+  reader.readAsText(file,"UTF-8");
+});
+
+document.getElementById("resetBtn").addEventListener("click",function(){
+  if(!confirm("همه تیک‌ها و یادداشت‌های این پروژه پاک شوند؟ قبل از این کار اگر لازم است بکاپ JSON بگیر.")) return;
+
+  try{
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("project-documentation-checklist-v1");
+  }catch(e){}
+
+  var projectEls = document.querySelectorAll("[data-project]");
+  var itemEls = document.querySelectorAll(".check-item");
+  var i,el;
+
+  for(i=0;i<projectEls.length;i++) projectEls[i].value = "";
+
+  for(i=0;i<itemEls.length;i++){
+    el = itemEls[i];
+    el.querySelector(".task-check").checked = false;
+    el.querySelector(".item-note").value = "";
+    el.className = el.className.replace(/\s*checked\b/g,"");
+  }
+
+  document.getElementById("summaryOutput").value = "";
+  document.getElementById("summaryOutput").style.display = "none";
+  updateProgress();
+  flash("فرم برای پروژه جدید پاک شد.");
+});
+
+function initApp(){
+  try{
+    renderChecklist();
+    restoreFromLocal();
+    updateProgress();
+  }catch(err){
+    var box = document.getElementById("jsError");
+    if(box){
+      box.style.display = "block";
+      box.innerHTML = "خطا در اجرای چک‌لیست: " + esc(err && err.message ? err.message : err);
+    }
+  }
+}
+
+initApp();
+</script>
+
+
+<script>
+(function(){
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./service-worker.js").catch(function(err){
+        console.log("Service Worker registration failed:", err);
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
